@@ -19,7 +19,11 @@ def pytest_funcarg__django_client(request):
     you won't use this, you'll use the 'client' funcarg below instead. This
     funcarg is only reset once per test session. The 'client' funcarg empties
     the database after each test to ensure a clean slate.'''
-    old_name = settings.DATABASE_NAME
+    try:
+        old_name = settings.DATABASES['default']['NAME']
+    except AttributeError:
+        # try older settings format
+        old_name = settings.DATABASE_NAME
     def setup():
         setup_test_environment()
         if not hasattr(settings, 'DEBUG'):
